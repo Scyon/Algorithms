@@ -19,9 +19,7 @@ class Edge:
 		self.targetVertex = targetVertex
 		
 	def __lt__(self, other):
-		# overriding 'less than' function in order to facillitate heap creation
-		# which requires comparison of nodes in order to build min heap
-		# (parents must be smaller than children)
+		# overriding 'less than' function in order to facillitate edge comparison
 		return self.weight < other.weight
 	
 	
