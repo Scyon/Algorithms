@@ -22,43 +22,40 @@ class Node:
 		# (parents must be smaller than children)
 		return self.minDistance < other.minDistance
 
-class Djikstra:
+class BellmanFord:
 
-	def calculateShortestPath(self, vertexList, startVertex):
-		# initialize heap
-		q = []
-		# set distance of starting vertex to 0
+	HAS_CYCLE = False
+
+	def calculateShortestPath(self, vertexList, edgeList, startVertex):
 		startVertex.minDistance = 0
-		# push starting vertex to heap
-		heapq.heappush(q, startVertex)
-		# while heap is not empty
-		while q:
-			# set currentVertex to the root node in the heap
-			currentVertex = heapq.heappop(q)
-			# iterate through edges connected to node
-			for edge in currentVertex.adjacenciesList:
-				# u --> starting node
+		for i in range(vertexList - 1):
+			for edge in edgeList:
 				u = edge.startVertex
-				# v --> terminal node
 				v = edge.targetVertex
-				# distance = distance to starting node + distance between
-				# starting and terminal nodes
-				newDistance = u.minDistance + edge.weight
-				# if new distance is less than distance to terminal node
-				if newDistance < v.minDistance:
-					# set predecessor of terminal node to starting node
+				distance = u.minDistance + edge.weight
+				if distance < v.minDistance:
+					v.minDistance = distance
 					v.predecessor = u
-					# update the minimum distance to new distance
-					v.minDistance = newDistance
-					# push terminal node to heap
-					heapq.heappush(q, v)
-					
+		for edge in edgeList:
+			if self.hasCycle(edge):
+				print('Negative cycle detected!')
+				BellmanFord.HAS_CYCLE = True
+				return
+
+	def hasCycle(self, edge):
+		if (edge.startVertex.minDistance + edge.weight) < edge.targetVertex.minDistance:
+			return True
+		return False
+
 	def getShortestPathTo(self, targetVertex):
-		print('The shortest path to vertex {} is: {}'.format(targetVertex.name, targetVertex.minDistance))
-		node = targetVertex
-		while node is not None:
-			print('{}'.format(node.name))
-			node = node.predecessor
+		if not BellmanFord.HAS_CYCLE:
+			print('Shortest path exists with value {}'.format(targetVertex.minDistance))
+			node = targetVertex
+			while node is not None:
+				print('{}'.format(node.name))
+				node = node.predecessor
+		else:
+			print('Negative cycle detected!')
 
 
 if __name__ == '__main__':
@@ -108,7 +105,10 @@ if __name__ == '__main__':
 
 
 	vertexList = (node1, node2, node3, node4, node5, node6, node7, node8)
+	edgeList = (edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8, edge9, edge10, edge11, edge12, edge13, edge14, edge15, edge16)
 
-	djikstra = Djikstra()
-	djikstra.calculateShortestPath(vertexList, node1)
-	djikstra.getShortestPathTo(node7)
+	bellmanFord = BellmanFord()
+	bellmanFord.calculateShortestPath(vertexList, edgeList, node1)
+	bellmanFord.getShortestPathTo(node7)
+
+
